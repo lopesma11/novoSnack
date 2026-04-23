@@ -54,7 +54,9 @@ export class Order {
       throw new Error(`Um pedido deve conter pelo menos um item.`);
     }
 
-    const hasInvalidQuantity = orderItem.some((item) => item.quantityItem <= 0);
+    const hasInvalidQuantity = orderItem.some((item) =>
+      item.quantityItem.getValue() <= 0,
+    );
 
     if (hasInvalidQuantity) {
       throw new Error(`A quantidade de cada item deve ser maior que zero.`);
