@@ -25,7 +25,7 @@ export class CategoryController {
   async handleList(request: Request, response: Response): Promise<void> {
     try {
       const categories = await this.listCategoriesUseCase.execute();
-      return response.status(201).json(categories);
+      return response.status(200).json(categories);
     } catch (error) {
       return response.status(500).json({ message: "Internal server error" });
     }

@@ -28,7 +28,15 @@ export class MongoOrderRepository implements IOrderRepository {
     return docs.map((doc) => this.toEntity(doc));
   }
 
-  async changeStatus(
+  async findById(orderId: string): Promise<Order | null> {
+    const doc = await OrderModel.findById(orderId).lean();
+
+    if (!doc) return null;
+
+    return this.toEntity(doc);
+  }
+
+  async changeOrderStatus(
     orderId: string,
     newOrderStatus: OrderStatus,
   ): Promise<void> {
