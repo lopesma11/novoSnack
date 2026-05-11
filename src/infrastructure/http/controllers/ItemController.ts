@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { CreateItemUseCase } from "../../../application/use-cases/item/createItem";
 import { ListItemsUseCase } from "../../../application/use-cases/item/listItems";
 
@@ -8,7 +8,11 @@ export class ItemController {
     private readonly listItemsUseCase: ListItemsUseCase,
   ) {}
 
-  async handleCreate(request: Request, response: Response): Promise<void> {
+  async handleCreate(
+    request: Request,
+    response: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const {
         itemName,
@@ -30,17 +34,21 @@ export class ItemController {
         .status(201)
         .json({ message: "Item created successfully" });
     } catch (error) {
-      return response.status(500).json({ message: "Internal server error" });
+      next(error);
     }
   }
 
-  async handleList(request: Request, response: Response): Promise<void> {
+  async handleList(
+    request: Request,
+    response: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const items = await this.listItemsUseCase.execute();
 
       return response.status(200).json(items);
     } catch (error) {
-      return response.status(500).json({ message: "Internal server error" });
+      next(error);
     }
   }
 }

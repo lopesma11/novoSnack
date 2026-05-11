@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { IUserRepository } from "../../repositories/IUserRepository";
+import { InvalidCredentialsError } from "../../../domain/errors/InvalidCredentialsError";
 
 export interface LoginDTO {
   email: string;
@@ -27,7 +28,7 @@ export class LoginUseCase {
     );
 
     if (!passwordMatch) {
-      throw new Error("Invalid credentials");
+      throw new InvalidCredentialsError();
     }
 
     const secret = process.env.JWT_SECRET;

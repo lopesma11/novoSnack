@@ -1,4 +1,4 @@
-import type { Request, Response } from "express";
+import type { Request, Response, NextFunction } from "express";
 import { CreateOrderUseCase } from "../../../application/use-cases/order/createOrder";
 import { ListOrdersUseCase } from "../../../application/use-cases/order/listOrders";
 import { CancelOrderUseCase } from "../../../application/use-cases/order/cancelOrder";
@@ -12,7 +12,11 @@ export class OrderController {
     private readonly cancelOrderUseCase: CancelOrderUseCase,
   ) {}
 
-  async handleCreate(request: Request, response: Response): Promise<void> {
+  async handleCreate(
+    request: Request,
+    response: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const { customerId, orderItem } = request.body;
 
@@ -22,23 +26,27 @@ export class OrderController {
         .status(201)
         .json({ message: "Order created successfully" });
     } catch (error) {
-      console.error("Error creating order:", error);
-      return response.status(500).json({ message: "Internal server error" });
+      next(error);
     }
   }
 
-  async handleList(request: Request, response: Response): Promise<void> {
+  async handleList(
+    request: Request,
+    response: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const orders = await this.listOrdersUseCase.execute();
       return response.status(200).json(orders);
     } catch (error) {
-      return response.status(500).json({ message: "Internal server error" });
+      next(error);
     }
   }
 
   async handleChangeStatus(
     request: Request,
     response: Response,
+    next: NextFunction,
   ): Promise<void> {
     try {
       const { orderId } = request.params;
@@ -51,11 +59,15 @@ export class OrderController {
         .status(200)
         .json({ message: "Order status changed successfully" });
     } catch (error) {
-      return response.status(500).json({ message: "Internal server error" });
+      next(error);
     }
   }
 
-  async handleCancel(request: Request, response: Response): Promise<void> {
+  async handleCancel(
+    request: Request,
+    response: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const { orderId } = request.params;
 
@@ -64,7 +76,7 @@ export class OrderController {
         .status(200)
         .json({ message: "Order canceled successfully" });
     } catch (error) {
-      return response.status(500).json({ message: "Internal server error" });
+      next(error);
     }
   }
 }

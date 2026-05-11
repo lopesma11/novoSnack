@@ -22,6 +22,7 @@ import { ItemController } from "./src/infrastructure/http/controllers/ItemContro
 import { OrderController } from "./src/infrastructure/http/controllers/OrderController";
 import { authenticate } from "./src/infrastructure/http/middlewares/authenticate";
 import { router } from "./src/infrastructure/http/routes";
+import { errorHandler } from "./src/infrastructure/http/middlewares/errorHandler";
 
 async function bootstrap() {
   const {
@@ -109,6 +110,7 @@ async function bootstrap() {
   app.use(cors({ origin: CLIENT_URL }));
   app.use(express.json());
   app.use(router);
+  app.use(errorHandler);
 
   app.listen(PORT, () => {
     console.log(`🚀 Server running at http://localhost:${PORT}`);

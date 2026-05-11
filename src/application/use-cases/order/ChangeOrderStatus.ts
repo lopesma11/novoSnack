@@ -1,4 +1,5 @@
 import { OrderStatus } from "../../../domain/entities/Order";
+import { NotFoundError } from "../../../domain/errors/NotFoundError";
 import { IOrderRepository } from "../../repositories/IOrderRepository";
 
 export interface ChangeOrderStatusDTO {
@@ -13,7 +14,7 @@ export class ChangeOrderStatusUseCase {
     const order = await this.orderRepository.findById(data.orderId);
 
     if (!order) {
-      throw new Error("Order not found");
+      throw new NotFoundError("Order");
     }
 
     order.transitionTo(data.newOrderStatus);

@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { CreateCategoryUseCase } from "../../../application/use-cases/category/createCategory";
 import { ListCategoriesUseCase } from "../../../application/use-cases/category/ListCategories";
 
@@ -8,7 +8,11 @@ export class CategoryController {
     private readonly listCategoriesUseCase: ListCategoriesUseCase,
   ) {}
 
-  async handleCreate(request: Request, response: Response): Promise<void> {
+  async handleCreate(
+    request: Request,
+    response: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const { categoryName } = request.body;
 
@@ -18,16 +22,20 @@ export class CategoryController {
         .status(201)
         .json({ message: "Category created successfully" });
     } catch (error) {
-      return response.status(500).json({ message: "Internal server error" });
+      next(error);
     }
   }
 
-  async handleList(request: Request, response: Response): Promise<void> {
+  async handleList(
+    request: Request,
+    response: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const categories = await this.listCategoriesUseCase.execute();
       return response.status(200).json(categories);
     } catch (error) {
-      return response.status(500).json({ message: "Internal server error" });
+      next(error);
     }
   }
 }

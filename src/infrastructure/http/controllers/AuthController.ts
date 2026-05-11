@@ -3,7 +3,7 @@ import {
   LoginUseCase,
 } from "../../../application/use-cases/auth/login";
 import { User } from "../../../domain/entities/user";
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 
 export interface ILoginUseCase {
   execute(data: LoginDTO): Promise<User>;
@@ -12,7 +12,11 @@ export interface ILoginUseCase {
 export class AuthController {
   constructor(private readonly loginUseCase: LoginUseCase) {}
 
-  async handleLogin(request: Request, response: Response): Promise<void> {
+  async handleLogin(
+    request: Request,
+    response: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const { email, password } = request.body;
 
@@ -20,10 +24,7 @@ export class AuthController {
 
       return response.status(200).json(userToken);
     } catch (error) {
-      if (error instanceof Error && error.message === "Invalid credentials") {
-        return response.status(401).json({ message: "Invalid credentials" });
-      }
-      return response.status(500).json({ message: "Internal server error" });
+      next(error);
     }
   }
 }

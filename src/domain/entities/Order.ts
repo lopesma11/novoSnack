@@ -1,3 +1,4 @@
+import { InvalidTransitionError } from "../errors/InvalidTransitionError";
 import { Quantity } from "../value-objects/Quantity";
 
 export enum OrderStatus {
@@ -42,9 +43,7 @@ export class Order {
     const allowed = validTransitions[this.orderStatus];
 
     if (allowed !== newOrderStatus) {
-      throw new Error(
-        `Transição inválida: ${this.orderStatus} -> ${newOrderStatus}. Permitido: ${this.orderStatus} -> ${allowed}`,
-      );
+      throw new InvalidTransitionError(this.orderStatus, newOrderStatus);
     }
     this.orderStatus = newOrderStatus;
   }
@@ -54,8 +53,8 @@ export class Order {
       throw new Error(`Um pedido deve conter pelo menos um item.`);
     }
 
-    const hasInvalidQuantity = orderItem.some((item) =>
-      item.quantityItem.getValue() <= 0,
+    const hasInvalidQuantity = orderItem.some(
+      (item) => item.quantityItem.getValue() <= 0,
     );
 
     if (hasInvalidQuantity) {
