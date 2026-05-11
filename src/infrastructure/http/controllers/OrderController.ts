@@ -41,7 +41,7 @@ export class OrderController {
     response: Response,
   ): Promise<void> {
     try {
-            const {orderId } = request.params;
+      const { orderId } = request.params;
 
       const { newOrderStatus } = request.body;
 
@@ -51,7 +51,7 @@ export class OrderController {
         .status(200)
         .json({ message: "Order status changed successfully" });
     } catch (error) {
-      return response.status(500).json({ message: "Internal server error" });)
+      return response.status(500).json({ message: "Internal server error" });
     }
   }
 
