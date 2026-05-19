@@ -1,12 +1,12 @@
 import {
   LoginDTO,
+  LoginResponseDTO,
   LoginUseCase,
 } from "../../../application/use-cases/auth/login";
-import { User } from "../../../domain/entities/user";
 import { Request, Response, NextFunction } from "express";
 
 export interface ILoginUseCase {
-  execute(data: LoginDTO): Promise<User>;
+  execute(data: LoginDTO): Promise<LoginResponseDTO>;
 }
 
 export class AuthController {

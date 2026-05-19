@@ -4,7 +4,7 @@ import { OrderStatus } from "../../../../domain/entities/Order";
 const orderItemSchema = new mongoose.Schema(
   {
     itemId: { type: String, required: true },
-    quantity: { type: Number, required: true },
+    quantityItem: { type: Number, required: true },
   },
   { _id: false },
 );

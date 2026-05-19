@@ -1,4 +1,5 @@
 import { IUserRepository } from "../../../../application/repositories/IUserRepository";
+import { User } from "../../../../domain/entities/user";
 import { UserModel } from "../models/UserModel";
 
 export class MongoUserRepository implements IUserRepository {

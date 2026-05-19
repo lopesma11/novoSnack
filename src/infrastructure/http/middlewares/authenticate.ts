@@ -9,7 +9,7 @@ export function authenticate(
   const authHeader = request.headers.authorization;
 
   if (!authHeader?.startsWith("Bearer")) {
-    response.statu(401).json({ message: "Token is not defined" });
+    response.status(401).json({ message: "Token is not defined" });
     return;
   }
 
@@ -24,7 +24,7 @@ export function authenticate(
   try {
     const decoded = jwt.verify(token, secret) as { sub: string; name: string };
 
-    request.use = decoded;
+    request.user = decoded;
 
     next();
   } catch {

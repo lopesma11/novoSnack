@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
@@ -32,7 +32,7 @@ async function bootstrap() {
   } = process.env;
 
   await mongoose.connect(MONGO_URI);
-  console.log("✅ Connected to MongoDB");
+  console.log("Connected to MongoDB");
 
   const authRepository = new MongoUserRepository();
   const orderRepository = new MongoOrderRepository();
@@ -62,48 +62,61 @@ async function bootstrap() {
     listCategories,
   );
 
-  router.post("/login", (req: Request, res: Response) =>
-    authController.handleLogin(req, res),
+  router.post("/login", (req: Request, res: Response, next: NextFunction) =>
+    authController.handleLogin(req, res, next),
   );
 
   //orders
-  router.post("/orders", (req: Request, res: Response) =>
-    orderController.handleCreate(req, res),
+  router.post(
+    "/orders",
+    authenticate,
+    (req: Request, res: Response, next: NextFunction) =>
+      orderController.handleCreate(req, res, next),
   );
 
-  router.get("/orders", authenticate, (req: Request, res: Response) =>
-    orderController.handleList(req, res),
+  router.get(
+    "/orders",
+    authenticate,
+    (req: Request, res: Response, next: NextFunction) =>
+      orderController.handleList(req, res, next),
   );
 
   router.patch(
     "/orders/:orderId",
     authenticate,
-    (req: Request, res: Response) =>
-      orderController.handleChangeStatus(req, res),
+    (req: Request, res: Response, next: NextFunction) =>
+      orderController.handleChangeStatus(req, res, next),
   );
 
   router.delete(
     "/orders/:orderId",
     authenticate,
-    (req: Request, res: Response) => orderController.handleCancel(req, res),
+    (req: Request, res: Response, next: NextFunction) =>
+      orderController.handleCancel(req, res, next),
   );
 
   //categories
-  router.post("/categories", authenticate, (req: Request, res: Response) =>
-    categoryController.handleCreate(req, res),
+  router.post(
+    "/categories",
+    authenticate,
+    (req: Request, res: Response, next: NextFunction) =>
+      categoryController.handleCreate(req, res, next),
   );
 
-  router.get("/categories", (req: Request, res: Response) =>
-    categoryController.handleList(req, res),
+  router.get("/categories", (req: Request, res: Response, next: NextFunction) =>
+    categoryController.handleList(req, res, next),
   );
 
   //items
-  router.post("/items", authenticate, (req: Request, res: Response) =>
-    itemController.handleCreate(req, res),
+  router.post(
+    "/items",
+    authenticate,
+    (req: Request, res: Response, next: NextFunction) =>
+      itemController.handleCreate(req, res, next),
   );
 
-  router.get("/items", (req: Request, res: Response) =>
-    itemController.handleList(req, res),
+  router.get("/items", (req: Request, res: Response, next: NextFunction) =>
+    itemController.handleList(req, res, next),
   );
 
   const app = express();
@@ -118,6 +131,6 @@ async function bootstrap() {
 }
 
 bootstrap().catch((err) => {
-  console.error("❌ Failed to start server:", err);
+  console.error("Failed to start server:", err);
   process.exit(1);
 });
