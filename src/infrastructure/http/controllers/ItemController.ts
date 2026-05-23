@@ -20,6 +20,7 @@ export class ItemController {
         itemPrice,
         itemIngredients,
         itemCategory,
+        imagePath,
       } = request.body;
 
       await this.createItemUseCase.execute({
@@ -28,6 +29,7 @@ export class ItemController {
         itemPrice,
         itemIngredients,
         itemCategory,
+        imagePath,
       });
 
       return response

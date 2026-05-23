@@ -8,21 +8,37 @@ export class MongoOrderRepository implements IOrderRepository {
   async save(order: Order): Promise<Order> {
     await OrderModel.create({
       _id: order.orderId,
-      customerId: order.customerId,
+      table: order.table,
       orderStatus: order.getStatus(),
       orderItems: order.orderItem.map((item) => ({
-        itemId: item.itemId,
-        quantityItem: item.quantityItem.getValue(),
+        product: item.itemId,
+        quantity: item.quantityItem.getValue(),
       })),
       createdAt: order.createdAt,
     });
     return order;
   }
 
-  async findAll(): Promise<Order[]> {
-    const docs = await OrderModel.find().lean();
+  async findAll(): Promise<any[]> {
+    const docs = await OrderModel.find()
+      .populate("orderItems.product", "itemName imagePath itemPrice")
+      .lean();
 
-    return docs.map((doc) => this.toEntity(doc));
+    return docs.map((doc: any) => ({
+      _id: doc._id,
+      table: doc.table,
+      status: doc.orderStatus,
+      createdAt: doc.createdAt,
+      products: doc.orderItems.map((item: any) => ({
+        _id: item._id ?? item.product?._id,
+        quantity: item.quantity,
+        product: {
+          name: item.product?.itemName ?? "",
+          imagePath: item.product?.imagePath ?? "",
+          price: item.product?.itemPrice ?? 0,
+        },
+      })),
+    }));
   }
 
   async findById(orderId: string): Promise<Order | null> {

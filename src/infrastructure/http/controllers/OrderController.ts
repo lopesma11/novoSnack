@@ -10,6 +10,7 @@ export class OrderController {
     private readonly listOrdersUseCase: ListOrdersUseCase,
     private readonly changeOrderStatusUseCase: ChangeOrderStatusUseCase,
     private readonly cancelOrderUseCase: CancelOrderUseCase,
+    private readonly io: any,
   ) {}
 
   async handleCreate(
@@ -18,9 +19,13 @@ export class OrderController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const { customerId, orderItem } = request.body;
+      const { table, products } = request.body;
 
-      await this.createOrderUseCase.execute({ customerId, orderItem });
+      await this.createOrderUseCase.execute({ table, products });
+
+      const orders = await this.listOrdersUseCase.execute();
+      const newOrder = orders.find();
+      this.io.emit("order@new", newOrder);
 
       return response
         .status(201)
@@ -51,9 +56,12 @@ export class OrderController {
     try {
       const { orderId } = request.params;
 
-      const { newOrderStatus } = request.body;
+      const { status } = request.body;
 
-      await this.changeOrderStatusUseCase.execute({ orderId, newOrderStatus });
+      await this.changeOrderStatusUseCase.execute({
+        orderId,
+        newOrderStatus: status,
+      });
 
       return response
         .status(200)

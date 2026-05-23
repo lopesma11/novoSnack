@@ -3,26 +3,30 @@ import type { Request, Response, NextFunction } from "express";
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import { LoginUseCase } from "./src/application/use-cases/auth/login";
-import { CreateCategoryUseCase } from "./src/application/use-cases/category/createCategory";
-import { ListCategoriesUseCase } from "./src/application/use-cases/category/ListCategories";
-import { CreateItemUseCase } from "./src/application/use-cases/item/createItem";
-import { ListItemsUseCase } from "./src/application/use-cases/item/listItems";
-import { CancelOrderUseCase } from "./src/application/use-cases/order/cancelOrder";
-import { ChangeOrderStatusUseCase } from "./src/application/use-cases/order/changeOrderStatus";
-import { CreateOrderUseCase } from "./src/application/use-cases/order/createOrder";
-import { ListOrdersUseCase } from "./src/application/use-cases/order/listOrders";
-import { MongoCategoryRepository } from "./src/infrastructure/database/mongoose/repositories/MongoCategoryRepository";
-import { MongoItemRepository } from "./src/infrastructure/database/mongoose/repositories/MongoItemRepository";
-import { MongoOrderRepository } from "./src/infrastructure/database/mongoose/repositories/MongoOrderRepository";
-import { MongoUserRepository } from "./src/infrastructure/database/mongoose/repositories/MongoUserRepository";
-import { AuthController } from "./src/infrastructure/http/controllers/AuthController";
-import { CategoryController } from "./src/infrastructure/http/controllers/CategoryController";
-import { ItemController } from "./src/infrastructure/http/controllers/ItemController";
-import { OrderController } from "./src/infrastructure/http/controllers/OrderController";
-import { authenticate } from "./src/infrastructure/http/middlewares/authenticate";
-import { router } from "./src/infrastructure/http/routes";
-import { errorHandler } from "./src/infrastructure/http/middlewares/errorHandler";
+import { createServer } from "http";
+import { Server as SockerIOServer } from "socket.io";
+import multer from "multer";
+import path from "path";
+import { LoginUseCase } from "./src/application/use-cases/auth/Login.js";
+import { CreateCategoryUseCase } from "./src/application/use-cases/category/CreateCategory.js";
+import { ListCategoriesUseCase } from "./src/application/use-cases/category/ListCategories.js";
+import { CreateItemUseCase } from "./src/application/use-cases/item/CreateItem.js";
+import { ListItemsUseCase } from "./src/application/use-cases/item/ListItems.js";
+import { CancelOrderUseCase } from "./src/application/use-cases/order/CancelOrder.js";
+import { ChangeOrderStatusUseCase } from "./src/application/use-cases/order/ChangeOrderStatus.js";
+import { CreateOrderUseCase } from "./src/application/use-cases/order/CreateOrder.js";
+import { ListOrdersUseCase } from "./src/application/use-cases/order/ListOrders.js";
+import { MongoCategoryRepository } from "./src/infrastructure/database/mongoose/repositories/MongoCategoryRepository.js";
+import { MongoItemRepository } from "./src/infrastructure/database/mongoose/repositories/MongoItemRepository.js";
+import { MongoOrderRepository } from "./src/infrastructure/database/mongoose/repositories/MongoOrderRepository.js";
+import { MongoUserRepository } from "./src/infrastructure/database/mongoose/repositories/MongoUserRepository.js";
+import { AuthController } from "./src/infrastructure/http/controllers/AuthController.js";
+import { CategoryController } from "./src/infrastructure/http/controllers/CategoryController.js";
+import { ItemController } from "./src/infrastructure/http/controllers/ItemController.js";
+import { OrderController } from "./src/infrastructure/http/controllers/OrderController.js";
+import { authenticate } from "./src/infrastructure/http/middlewares/authenticate.js";
+import { router } from "./src/infrastructure/http/routes/index.js";
+import { errorHandler } from "./src/infrastructure/http/middlewares/errorHandler.js";
 
 async function bootstrap() {
   const {
@@ -55,6 +59,7 @@ async function bootstrap() {
     listOrders,
     changeOrderStatus,
     cancelOrder,
+    io,
   );
   const itemController = new ItemController(createItem, listItems);
   const categoryController = new CategoryController(
@@ -107,27 +112,75 @@ async function bootstrap() {
     categoryController.handleList(req, res, next),
   );
 
-  //items
+  router.get(
+    "/categories/:categoryId/products",
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const { categoryId } = req.params;
+        const { ItemModel } =
+          await import("./src/infrastructure/database/mongoose/models/ItemModel.js");
+        const items = await ItemModel.find({ itemCategory: categoryId }).lean();
+        const result = items.map((doc: any) => ({
+          _id: doc._id,
+          name: doc.itemName,
+          description: doc.itemDescription,
+          imagePath: doc.imagePath ?? "",
+          price: doc.itemPrice,
+          category: doc.itemCategory,
+          ingredients: (doc.itemIngredients ?? []).map((ing: any) => ({
+            _id: ing._id,
+            name: ing.name,
+            icon: ing.icon,
+          })),
+        }));
+        return res.status(200).json(result);
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+
+  //products
   router.post(
-    "/items",
+    "/products",
     authenticate,
     (req: Request, res: Response, next: NextFunction) =>
       itemController.handleCreate(req, res, next),
   );
 
-  router.get("/items", (req: Request, res: Response, next: NextFunction) =>
+  router.get("/products", (req: Request, res: Response, next: NextFunction) =>
     itemController.handleList(req, res, next),
   );
 
   const app = express();
+  const httpServer = createServer(app);
+  const io = new SockerIOServer(httpServer, {
+    cors: { origin: "*" },
+  });
+
+  const storage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, "uploads/"),
+    filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
+  });
+  const upload = multer({ storage });
   app.use(cors({ origin: CLIENT_URL }));
   app.use(express.json());
   app.use(router);
   app.use(errorHandler);
 
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running at http://localhost:${PORT}`);
+  httpServer.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
   });
+
+  app.use("/uploads", express.static(path.resolve("uploads")));
+
+  router.post(
+    "/products",
+    authenticate,
+    upload.single("image"),
+    (req: Request, res: Response, next: NextFunction) =>
+      itemController.handleList(req, res, next),
+  );
 }
 
 bootstrap().catch((err) => {

@@ -1,11 +1,14 @@
 import { Price } from "../value-objects/Price.js";
 
+export type Ingredient = { name: string; icon: string; _id: string };
+
 export class Item {
   readonly itemId: string;
   readonly itemName: string;
   readonly itemDescription: string;
   readonly itemPrice: Price;
-  readonly itemIngredients: string[];
+  readonly itemIngredients: Ingredient[];
+  readonly imagePath: string;
   readonly itemCategory: string;
   readonly createdAt: Date;
 
@@ -14,14 +17,16 @@ export class Item {
     itemName: string,
     itemDescription: string,
     itemPrice: Price,
-    itemIngredients: string[],
+    itemIngredients: Ingredient[],
     itemCategory: string,
+    imagePath: string = "",
   ) {
     this.itemId = itemId;
     this.itemName = itemName;
     this.itemDescription = itemDescription;
     this.itemPrice = itemPrice;
     this.itemIngredients = itemIngredients;
+    this.imagePath = imagePath;
     this.itemCategory = itemCategory;
     this.createdAt = new Date();
   }

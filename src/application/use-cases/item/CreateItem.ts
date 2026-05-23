@@ -7,8 +7,9 @@ export interface CreateItemDTO {
   itemName: string;
   itemDescription: string;
   itemPrice: number;
-  itemIngredients: string[];
+  itemIngredients: { name: string; icon: string }[];
   itemCategory: string;
+  imagePath?: string;
 }
 
 export class CreateItemUseCase {
@@ -22,6 +23,7 @@ export class CreateItemUseCase {
       new Price(data.itemPrice),
       data.itemIngredients,
       data.itemCategory,
+      data.imagePath ?? "",
     );
 
     await this.itemRepository.save(item);

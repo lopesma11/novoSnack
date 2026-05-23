@@ -2,9 +2,9 @@ import { InvalidTransitionError } from "../errors/InvalidTransitionError.js";
 import { Quantity } from "../value-objects/Quantity.js";
 
 export enum OrderStatus {
-  PENDING = "pending",
-  IN_PROGRESS = "in_progress",
-  COMPLETED = "completed",
+  WAITING = "waiting",
+  IN_PRODUCTION = "in_production",
+  DONE = "done",
 }
 
 export type OrderItem = {
@@ -14,19 +14,19 @@ export type OrderItem = {
 
 export class Order {
   readonly orderId: string;
-  readonly customerId: string;
+  readonly table: string;
   readonly createdAt: Date;
   readonly orderItem: OrderItem[];
 
   private orderStatus: OrderStatus;
 
-  constructor(orderId: string, customerId: string, orderItem: OrderItem[]) {
+  constructor(orderId: string, table: string, orderItem: OrderItem[]) {
     this.validateOrderItem(orderItem);
     this.orderId = orderId;
-    this.customerId = customerId;
+    this.table = table;
     this.createdAt = new Date();
     this.orderItem = orderItem;
-    this.orderStatus = OrderStatus.PENDING;
+    this.orderStatus = OrderStatus.WAITING;
   }
 
   getStatus(): OrderStatus {
@@ -35,9 +35,9 @@ export class Order {
 
   transitionTo(newOrderStatus: OrderStatus): void {
     const validTransitions: Record<OrderStatus, OrderStatus | null> = {
-      [OrderStatus.PENDING]: OrderStatus.IN_PROGRESS,
-      [OrderStatus.IN_PROGRESS]: OrderStatus.COMPLETED,
-      [OrderStatus.COMPLETED]: null,
+      [OrderStatus.WAITING]: OrderStatus.IN_PRODUCTION,
+      [OrderStatus.IN_PRODUCTION]: OrderStatus.DONE,
+      [OrderStatus.DONE]: null,
     };
 
     const allowed = validTransitions[this.orderStatus];

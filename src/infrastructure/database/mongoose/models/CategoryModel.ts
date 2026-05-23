@@ -2,7 +2,8 @@ import mongoose from "mongoose";
 
 const categorySchema = new mongoose.Schema(
   {
-    categoryName: { type: String, required: true },
+    name: { type: String, required: true },
+    icon: { type: String, default: "" },
   },
   { timestamps: true },
 );

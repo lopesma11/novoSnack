@@ -12,16 +12,29 @@ export class MongoItemRepository implements IItemRepository {
       itemPrice: item.itemPrice.getValue(),
       itemIngredients: item.itemIngredients,
       itemCategory: item.itemCategory,
+      imagePath: item.imagePath,
       createdAt: item.createdAt,
     });
 
     return item;
   }
 
-  async findAll(): Promise<Item[]> {
+  async findAll(): Promise<any[]> {
     const docs = await ItemModel.find().lean();
 
-    return docs.map((doc) => this.toEntity(doc));
+    return docs.map((doc: any) => ({
+      _id: doc._id,
+      name: doc.itemName,
+      description: doc.itemDescription,
+      imagePath: doc.imagePath ?? "",
+      price: doc.itemPrice,
+      category: doc.itemCategory,
+      ingredients: (doc.itemIngredients ?? []).map((ing: any) => ({
+        _id: ing._id,
+        name: ing.name,
+        icon: ing.icon,
+      })),
+    }));
   }
 
   private toEntity(doc: any): Item {
