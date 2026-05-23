@@ -27,6 +27,7 @@ import { OrderController } from "./src/infrastructure/http/controllers/OrderCont
 import { authenticate } from "./src/infrastructure/http/middlewares/authenticate.js";
 import { router } from "./src/infrastructure/http/routes/index.js";
 import { errorHandler } from "./src/infrastructure/http/middlewares/errorHandler.js";
+import { ListItemsByCategoryUseCase } from "./src/application/use-cases/item/ListItemsByCategory.js";
 
 async function bootstrap() {
   const {
@@ -50,6 +51,7 @@ async function bootstrap() {
   const listOrders = new ListOrdersUseCase(orderRepository);
   const listCategories = new ListCategoriesUseCase(categoryRepository);
   const listItems = new ListItemsUseCase(itemRepository);
+  const listItemsByCategory = new ListItemsByCategoryUseCase(itemRepository);
   const changeOrderStatus = new ChangeOrderStatusUseCase(orderRepository);
   const cancelOrder = new CancelOrderUseCase(orderRepository);
 
@@ -61,7 +63,11 @@ async function bootstrap() {
     cancelOrder,
     io,
   );
-  const itemController = new ItemController(createItem, listItems);
+  const itemController = new ItemController(
+    createItem,
+    listItems,
+    listItemsByCategory,
+  );
   const categoryController = new CategoryController(
     createCategory,
     listCategories,
@@ -112,33 +118,9 @@ async function bootstrap() {
     categoryController.handleList(req, res, next),
   );
 
-  router.get(
-    "/categories/:categoryId/products",
-    async (req: Request, res: Response, next: NextFunction) => {
-      try {
-        const { categoryId } = req.params;
-        const { ItemModel } =
-          await import("./src/infrastructure/database/mongoose/models/ItemModel.js");
-        const items = await ItemModel.find({ itemCategory: categoryId }).lean();
-        const result = items.map((doc: any) => ({
-          _id: doc._id,
-          name: doc.itemName,
-          description: doc.itemDescription,
-          imagePath: doc.imagePath ?? "",
-          price: doc.itemPrice,
-          category: doc.itemCategory,
-          ingredients: (doc.itemIngredients ?? []).map((ing: any) => ({
-            _id: ing._id,
-            name: ing.name,
-            icon: ing.icon,
-          })),
-        }));
-        return res.status(200).json(result);
-      } catch (error) {
-        next(error);
-      }
-    },
-  );
+  router.get("/categories/:categoryId/products", (req, res, next) => {
+    itemController.handleListByCategory(req, res, next);
+  });
 
   //products
   router.post(

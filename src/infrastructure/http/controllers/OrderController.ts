@@ -21,10 +21,13 @@ export class OrderController {
     try {
       const { table, products } = request.body;
 
-      await this.createOrderUseCase.execute({ table, products });
+      const createdOrder = await this.createOrderUseCase.execute({
+        table,
+        products,
+      });
 
       const orders = await this.listOrdersUseCase.execute();
-      const newOrder = orders.find();
+      const newOrder = orders.find((o: any) => o._id === createdOrder.orderId);
       this.io.emit("order@new", newOrder);
 
       return response

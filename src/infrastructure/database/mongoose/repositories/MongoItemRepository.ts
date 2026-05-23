@@ -37,6 +37,24 @@ export class MongoItemRepository implements IItemRepository {
     }));
   }
 
+  async findByCategory(categoryId: string): Promise<any[]> {
+    const docs = await ItemModel.find({ itemCategory: categoryId }).lean();
+
+    return docs.map((doc: any) => ({
+      _id: doc._id,
+      name: doc.itemName,
+      description: doc.itemDescription,
+      imagePath: doc.imagePath ?? "",
+      price: doc.itemPrice,
+      category: doc.itemCategory,
+      ingredients: (doc.itemIngredients ?? []).map((ing: any) => ({
+        _id: ing._id,
+        name: ing.name,
+        icon: ing.icon,
+      })),
+    }));
+  }
+
   private toEntity(doc: any): Item {
     return new Item(
       doc._id,
