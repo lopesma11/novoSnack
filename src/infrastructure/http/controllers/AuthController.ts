@@ -1,9 +1,9 @@
-import {
+import { LoginUseCase } from "../../../application/use-cases/auth/Login.js";
+import type {
   LoginDTO,
   LoginResponseDTO,
-  LoginUseCase,
-} from "../../../application/use-cases/auth/login";
-import { Request, Response, NextFunction } from "express";
+} from "../../../application/use-cases/auth/Login.js";
+import type { Request, Response, NextFunction } from "express";
 
 export interface ILoginUseCase {
   execute(data: LoginDTO): Promise<LoginResponseDTO>;

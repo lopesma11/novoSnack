@@ -1,6 +1,6 @@
-import { OrderStatus } from "../../../domain/entities/Order";
-import { NotFoundError } from "../../../domain/errors/NotFoundError";
-import { IOrderRepository } from "../../repositories/IOrderRepository";
+import { OrderStatus } from "../../../domain/entities/Order.js";
+import { NotFoundError } from "../../../domain/errors/NotFoundError.js";
+import type { IOrderRepository } from "../../repositories/IOrderRepository.js";
 
 export interface ChangeOrderStatusDTO {
   orderId: string;

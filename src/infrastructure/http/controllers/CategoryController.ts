@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction } from "express";
-import { CreateCategoryUseCase } from "../../../application/use-cases/category/createCategory";
-import { ListCategoriesUseCase } from "../../../application/use-cases/category/ListCategories";
+import type { Request, Response, NextFunction } from "express";
+import { CreateCategoryUseCase } from "../../../application/use-cases/category/CreateCategory.js";
+import { ListCategoriesUseCase } from "../../../application/use-cases/category/ListCategories.js";
 
 export class CategoryController {
   constructor(

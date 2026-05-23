@@ -1,11 +1,8 @@
-import { IOrderRepository } from "../../../../application/repositories/IOrderRepository";
-import {
-  Order,
-  OrderItem,
-  OrderStatus,
-} from "../../../../domain/entities/Order";
-import { Quantity } from "../../../../domain/value-objects/Quantity";
-import { OrderModel } from "../models/OrderModel";
+import type { IOrderRepository } from "../../../../application/repositories/IOrderRepository.js";
+import { Order, OrderStatus } from "../../../../domain/entities/Order.js";
+import type { OrderItem } from "../../../../domain/entities/Order.js";
+import { Quantity } from "../../../../domain/value-objects/Quantity.js";
+import { OrderModel } from "../models/OrderModel.js";
 
 export class MongoOrderRepository implements IOrderRepository {
   async save(order: Order): Promise<Order> {

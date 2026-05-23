@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
-import { Item } from "../../../domain/entities/Item";
-import { Price } from "../../../domain/value-objects/Price";
-import { IItemRepository } from "../../repositories/IItemRepository";
+import { Item } from "../../../domain/entities/Item.js";
+import { Price } from "../../../domain/value-objects/Price.js";
+import type { IItemRepository } from "../../repositories/IItemRepository.js";
 
 export interface CreateItemDTO {
   itemName: string;

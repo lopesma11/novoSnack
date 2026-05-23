@@ -1,4 +1,4 @@
-import { Price } from "../value-objects/Price";
+import { Price } from "../value-objects/Price.js";
 
 export class Item {
   readonly itemId: string;

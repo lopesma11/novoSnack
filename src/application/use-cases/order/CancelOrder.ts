@@ -1,4 +1,4 @@
-import { IOrderRepository } from "../../repositories/IOrderRepository";
+import type { IOrderRepository } from "../../repositories/IOrderRepository.js";
 
 export interface CancelOrderDTO {
   orderId: string;

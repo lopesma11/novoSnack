@@ -1,8 +1,8 @@
 import type { Request, Response, NextFunction } from "express";
-import { CreateOrderUseCase } from "../../../application/use-cases/order/createOrder";
-import { ListOrdersUseCase } from "../../../application/use-cases/order/listOrders";
-import { CancelOrderUseCase } from "../../../application/use-cases/order/cancelOrder";
-import { ChangeOrderStatusUseCase } from "../../../application/use-cases/order/changeOrderStatus";
+import { CreateOrderUseCase } from "../../../application/use-cases/order/CreateOrder.js";
+import { ListOrdersUseCase } from "../../../application/use-cases/order/ListOrders.js";
+import { CancelOrderUseCase } from "../../../application/use-cases/order/CancelOrder.js";
+import { ChangeOrderStatusUseCase } from "../../../application/use-cases/order/ChangeOrderStatus.js";
 
 export class OrderController {
   constructor(

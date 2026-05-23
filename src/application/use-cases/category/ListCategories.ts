@@ -1,5 +1,5 @@
-import { Category } from "../../../domain/entities/category";
-import { ICategoryRepository } from "../../repositories/ICategoryRepository";
+import { Category } from "../../../domain/entities/Category.js";
+import type { ICategoryRepository } from "../../repositories/ICategoryRepository.js";
 
 export class ListCategoriesUseCase {
   constructor(private readonly categoryRepository: ICategoryRepository) {}

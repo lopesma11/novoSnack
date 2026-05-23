@@ -1,16 +1,16 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { IUserRepository } from "../../repositories/IUserRepository";
-import { InvalidCredentialsError } from "../../../domain/errors/InvalidCredentialsError";
+import type { IUserRepository } from "../../repositories/IUserRepository.js";
+import { InvalidCredentialsError } from "../../../domain/errors/InvalidCredentialsError.js";
 
-export interface LoginDTO {
+export type LoginDTO = {
   email: string;
   password: string;
-}
+};
 
-export interface LoginResponseDTO {
+export type LoginResponseDTO = {
   token: string;
-}
+};
 
 export class LoginUseCase {
   constructor(private readonly userRepository: IUserRepository) {}

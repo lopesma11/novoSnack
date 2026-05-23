@@ -1,5 +1,5 @@
-import { InvalidTransitionError } from "../errors/InvalidTransitionError";
-import { Quantity } from "../value-objects/Quantity";
+import { InvalidTransitionError } from "../errors/InvalidTransitionError.js";
+import { Quantity } from "../value-objects/Quantity.js";
 
 export enum OrderStatus {
   PENDING = "pending",
@@ -7,10 +7,10 @@ export enum OrderStatus {
   COMPLETED = "completed",
 }
 
-export interface OrderItem {
+export type OrderItem = {
   itemId: string;
   quantityItem: Quantity;
-}
+};
 
 export class Order {
   readonly orderId: string;

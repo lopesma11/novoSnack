@@ -1,6 +1,6 @@
-import { ICategoryRepository } from "../../../../application/repositories/ICategoryRepository";
-import { Category } from "../../../../domain/entities/category";
-import { CategoryModel } from "../models/CategoryModel";
+import type { ICategoryRepository } from "../../../../application/repositories/ICategoryRepository.js";
+import { Category } from "../../../../domain/entities/Category.js";
+import { CategoryModel } from "../models/CategoryModel.js";
 
 export class MongoCategoryRepository implements ICategoryRepository {
   async save(category: Category): Promise<Category> {

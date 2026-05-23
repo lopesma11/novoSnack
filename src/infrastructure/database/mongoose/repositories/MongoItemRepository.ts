@@ -1,7 +1,7 @@
-import { IItemRepository } from "../../../../application/repositories/IItemRepository";
-import { Item } from "../../../../domain/entities/Item";
-import { Price } from "../../../../domain/value-objects/Price";
-import { ItemModel } from "../models/ItemModel";
+import type { IItemRepository } from "../../../../application/repositories/IItemRepository.js";
+import { Item } from "../../../../domain/entities/Item.js";
+import { Price } from "../../../../domain/value-objects/Price.js";
+import { ItemModel } from "../models/ItemModel.js";
 
 export class MongoItemRepository implements IItemRepository {
   async save(item: Item): Promise<Item> {
