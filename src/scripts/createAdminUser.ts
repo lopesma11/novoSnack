@@ -1,7 +1,7 @@
 import "dotenv/config";
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
-import { UserModel } from "../infrastructure/database/mongoose/models/UserModel";
+import { UserModel } from "../infrastructure/database/mongoose/models/UserModel.js";
 
 const ADMIN = {
   userName: "admin_novo_snack",
